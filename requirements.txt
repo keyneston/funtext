@@ -1,0 +1,4 @@
+Flask==0.10.1
+pyfiglet==0.6.1
+ansi2html==1.0.6
+gunicorn==18.0
