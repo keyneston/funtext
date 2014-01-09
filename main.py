@@ -63,7 +63,9 @@ def getFont(font):
     default_font = "slant"
     fonts = FigletFont().getFonts()
 
-    if font == "random":
+    if font == None:
+        return default_font
+    elif font == "random":
         return choice(fonts)
     elif "," in font:
         # Build a random list of possible fonts
