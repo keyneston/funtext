@@ -11,6 +11,7 @@ def convert2HTML(ansi):
     html  = conv.convert(ansi)
     return html
 
+
 def clean_string_literal(text):
     """
     String literals in python contain lots of extra whitespace that isn't needed.
@@ -18,6 +19,14 @@ def clean_string_literal(text):
     In addition leading and trailing newlines
     """
     return dedent(text).strip()
+
+
+def format_request(ansi):
+    if request.user_agent.browser:
+        return convert2HTML(ansi)
+    else:
+        return ansi + "\n"
+
 
 @app.route('/')
 def index():
@@ -27,13 +36,19 @@ def index():
 
     /text/hello%20bob
     /text/nope
-    """)
 
-    browser = request.user_agent.browser
-    if browser:
-        return convert2HTML(usage)
-    else:
-        return usage + "\n"
+    To get a list of fonts:
+    /fonts
+    """)
+    return format_request(usage)
+
+
+@app.route('/fonts')
+def fonts():
+    fonts = FigletFont().getFonts()
+    ansi = "\n".join(fonts)
+    return format_request(ansi)
+
 
 @app.route('/text/<text>')
 def textApi(text=None):
@@ -44,10 +59,8 @@ def textApi(text=None):
     fig = Figlet(font=font)
     ansi = fig.renderText(text)
 
-    if request.user_agent.browser:
-        return convert2HTML(ansi)
-    else:
-        return ansi
+    return format_request(ansi)
+
 
 def getFont(font):
     """
@@ -86,8 +99,10 @@ def getFont(font):
         # Catchall default font
         return default_font
 
+
 def main(debug=False):
     app.run(host="0.0.0.0", debug=debug)
+
 
 if __name__ == '__main__':
     main(debug=True)
